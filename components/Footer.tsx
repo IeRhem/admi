@@ -1,4 +1,4 @@
-import { navLinks, socialLinks } from "@/lib";
+import { navLinks, socialLinks } from "@/lib/info";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, ArrowUpRight } from "lucide-react";
