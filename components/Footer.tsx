@@ -1,8 +1,7 @@
 import { navLinks, socialLinks } from "@/lib/info";
 import Link from "next/link";
-import Image from "next/image";
 import { MapPin, ArrowUpRight } from "lucide-react";
-import { buttonVariants } from "../ui/button";
+import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 
 /* ── Inline SVG social icons (Lucide React doesn't ship social icons) ── */
@@ -55,40 +54,9 @@ export default function Footer() {
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-linear-to-t from-primary/3 via-transparent to-transparent dark:from-primary/6 pointer-events-none z-0" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-5 md:px-10 pt-16 md:pt-24 pb-6">
-        {/* ── Top row: Logo + tagline ── */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-14">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/admi-logo.png"
-              alt="ADMI Logo"
-              width={44}
-              height={44}
-              className="drop-shadow-sm w-auto"
-            />
-            <div>
-              <span className="font-heading font-bold text-xl tracking-tight drop-shadow-sm block">
-                ADMI
-              </span>
-              <span className="text-xs text-muted-foreground tracking-wider uppercase">
-                Arrow of Deliverance Ministries
-              </span>
-            </div>
-          </div>
-
-          <Link
-            href="/give"
-            className={cn(
-              buttonVariants({ size: "lg" }),
-              "shadow-md px-6 text-base",
-            )}
-          >
-            Give Online
-          </Link>
-        </div>
-
+      <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-10 pt-16 md:pt-16 pb-6">
         {/* ── Main grid: Location · Socials · Links ── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+        <div className="flex flex-col-reverse md:grid md:grid-cols-3 gap-12 md:gap-8">
           {/* Location */}
           <div className="flex flex-col">
             <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 font-semibold">
@@ -105,7 +73,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className={cn(
                 buttonVariants({ variant: "secondary", size: "lg" }),
-                "w-fit",
+                "w-fit rounded-md",
               )}
             >
               <MapPin className="size-4" />
@@ -119,7 +87,7 @@ export default function Footer() {
               Connect With Us
             </h3>
             <ul className="grid grid-cols-2 gap-3">
-              {socialLinks.map(({ name, href, pageName }) => {
+              {socialLinks.map(({ name, href }) => {
                 const Icon = socialIconMap[name];
                 return (
                   <li key={name}>
@@ -127,7 +95,7 @@ export default function Footer() {
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group/social flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border bg-foreground/2 hover:bg-foreground/6 dark:bg-white/3 dark:hover:bg-white/8 transition-all duration-200"
+                      className="group/social flex items-center gap-3 px-3 py-2.5 rounded-md border border-border bg-foreground/2 hover:bg-foreground/6 dark:bg-white/3 dark:hover:bg-white/8 transition-all duration-200"
                     >
                       {Icon && (
                         <Icon className="size-5 shrink-0 text-muted-foreground group-hover/social:text-foreground transition-colors" />
@@ -169,11 +137,10 @@ export default function Footer() {
         </div>
 
         {/* ── Separator ── */}
-        <div className="mt-16 mb-8 h-px bg-linear-to-r from-transparent via-border to-transparent" />
-
+        <div className="mt-8 mb-8 h-px bg-linear-to-r from-transparent via-border to-transparent" />
         {/* ── Large typographic ministry name ── */}
         <div className="flex flex-col items-center text-center">
-          <h2 className="text-6xl md:text-8xl leading-[0.85] font-bold font-heading tracking-tight text-foreground/6 dark:text-foreground/8 select-none pointer-events-none">
+          <h2 className="text-6xl md:text-8xl leading-[0.85] font-bold font-heading tracking-tight text-foreground/10 dark:text-foreground/10 select-none pointer-events-none">
             Arrow of Deliverance Ministries
           </h2>
           <span className="text-sm text-muted-foreground mt-6">

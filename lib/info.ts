@@ -1,3 +1,5 @@
+export const logo = "/admi-logo.png";
+
 export const socialLinks = [
   { name: "YouTube", href: "https://www.youtube.com/@arrowofdeliveranceministries", pageName: "Arrow of Deliverance Ministries", actionLabel: "View Channel" },
   { name: "Facebook", href: "https://web.facebook.com/ADMIvictorychapel", pageName: "ADMI Victory Chapel", actionLabel: "View Page" },
@@ -17,3 +19,9 @@ export const leadership = [
     { name: "Instagram", href: "https://www.instagram.com/chistabel_joe", pageName: "Christabel Joseph", actionLabel: "View Profile" },
   ]}
 ]
+export const navLinks = [
+  { name: "Home", href: "/" },
+  { name: "The Church", href: "/about" },
+  { name: "Contact", href: "/contact" },
+  { name: "Events", href: "/events" },
+];
