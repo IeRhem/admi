@@ -3,66 +3,194 @@
 import { logo, navLinks } from "@/lib/info";
 import Image from "next/image";
 import Link from "next/link";
-import { Button, buttonVariants } from "./ui/button";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/all";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const menuTlRef = useRef<gsap.core.Timeline | null>(null);
+
+  const headerRef = useRef<HTMLElement>(null);
+  const logoRef = useRef<HTMLAnchorElement>(null);
+  const desktopNavRef = useRef<HTMLElement>(null);
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // ── 1. Entrance animation on mount ──
+  useGSAP(
+    () => {
+      const header = headerRef.current;
+      if (!header) return;
+
+      // Set initial states
+      gsap.set(header, { y: -100, opacity: 0 });
+
+      if (logoRef.current) {
+        gsap.set(logoRef.current, { x: -40, opacity: 0 });
+      }
+
+      const navLinks = desktopNavRef.current?.querySelectorAll("a");
+      if (navLinks?.length) {
+        gsap.set(navLinks, { y: -20, opacity: 0 });
+      }
+
+      if (menuBtnRef.current) {
+        gsap.set(menuBtnRef.current, { x: 40, opacity: 0 });
+      }
+
+      // Build entrance timeline
+      const entranceTl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+      });
+
+      entranceTl
+        // Header slides down
+        .to(header, {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+        })
+        // Logo slides in from left
+        .to(
+          logoRef.current,
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.5,
+          },
+          "-=0.3",
+        )
+        // Nav links stagger in
+        .to(
+          navLinks ?? [],
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.4,
+            stagger: 0.08,
+          },
+          "-=0.25",
+        )
+        // Mobile menu button fades in from right
+        .to(
+          menuBtnRef.current,
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.4,
+          },
+          "-=0.3",
+        );
+    },
+    { scope: headerRef },
+  );
+
+  // ── 2. Scroll-triggered hide/show ──
+  useGSAP(
+    () => {
+      const header = headerRef.current;
+      if (!header) return;
+
+      const showNav = gsap
+        .from(header, {
+          yPercent: -100,
+          paused: true,
+          duration: 0.3,
+          ease: "power2.out",
+        })
+        .progress(1);
+
+      ScrollTrigger.create({
+        start: "top top",
+        end: "max",
+        onUpdate: (self) => {
+          if (self.direction === -1) {
+            showNav.play();
+          } else {
+            showNav.reverse();
+          }
+        },
+      });
+    },
+    { scope: headerRef },
+  );
+
+  // ── 3. Mobile menu animation with reverse ease ──
+  // Keep the menu mounted and drive open/close via timeline play/reverse
+  useEffect(() => {
+    if (menuOpen) {
+      const frame = requestAnimationFrame(() => setMenuVisible(true));
+      menuTlRef.current?.reversed(false).play();
+      return () => cancelAnimationFrame(frame);
+    } else if (menuTlRef.current) {
+      // Reverse with a snappier ease
+      menuTlRef.current.reversed(true);
+    }
+  }, [menuOpen]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 0);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    if (!menuVisible || !mobileMenuRef.current) return;
 
-  const handleLinkClick = () => {
-    setMenuOpen(false);
-  };
+    const container = mobileMenuRef.current;
+    const links = container.querySelectorAll("a");
 
-  useGSAP(() => {
-    gsap.set(".header", { y: -100, opacity: 0 });
-
-    const headerTween = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".header",
-        start: "bottom top",
-        toggleActions: "play none none reverse",
+    // Build the timeline once
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { ease: "power3.out" },
+      onReverseComplete: () => {
+        setMenuVisible(false);
       },
     });
 
-    headerTween.to(".header", {
-      y: 0,
-      opacity: 1,
-      duration: 1.2,
-      ease: "expo.out",
-    });
-  }, []);
+    tl.fromTo(
+      container,
+      { opacity: 0, y: -10, scale: 0.97 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.3 },
+    ).fromTo(
+      links,
+      { x: -20, opacity: 0 },
+      { x: 0, opacity: 1, duration: 0.3, stagger: 0.06 },
+      "-=0.15",
+    );
+
+    menuTlRef.current = tl;
+    tl.play();
+
+    return () => {
+      tl.kill();
+      menuTlRef.current = null;
+    };
+  }, [menuVisible]);
 
   return (
-    <header className="header opacity-0 sticky top-0 left-0 z-100 w-full py-3">
+    <header
+      ref={headerRef}
+      className="header fixed top-0 left-0 z-100 w-full py-3"
+    >
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="shrink-0">
-          <Image src={logo} width="50" height="50" alt="ADMI" />
+        <Link
+          ref={logoRef}
+          href="/"
+          className="shrink-0 flex items-center gap-1 rounded-4xl px-4 text-lg font-bold text-white transition-colors hover:bg-foreground "
+        >
+          <Image src={logo} width="50" height="50" alt="ADMI" loading="eager" />
+          {/* <span className="pr-2 font-heading">ADMI</span> */}
         </Link>
 
         <nav
-          className={cn(
-            "nav hidden gap-2 rounded-lg p-2 font-medium text-white transition-colors duration-300 md:flex",
-            scrolled && "bg-primary",
-          )}
+          ref={desktopNavRef}
+          className="nav backdrop-blur-md hidden gap-2 rounded-lg p-2 font-medium text-white transition-colors duration-300 md:flex bg-primary/75"
         >
           {navLinks.map((item) => {
             const isActive = pathname === item.href;
@@ -85,67 +213,24 @@ export default function Navbar() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/"
-            className={buttonVariants({
-              size: "lg",
-              className:
-                "bg-primary-foreground! py-5! px-6! text-primary! rounded-lg! border-4!",
-            })}
-          >
-            Give
-          </Link>
-          <Link
-            href="/"
-            className={buttonVariants({
-              size: "lg",
-              className:
-                "bg-[#FF0000]! py-5! px-6! text-white! rounded-lg! border-4!",
-            })}
-          >
-            Watch Online
-          </Link>
-        </div>
-
         <Button
+          ref={menuBtnRef}
           type="button"
           aria-label="Toggle navigation menu"
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((prev) => !prev)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-white/20 bg-primary text-white transition-colors hover:bg-primary/90 md:hidden"
+          className="inline-flex p-4 items-center text-md justify-center rounded-4xl border border-white/20 bg-primary/75 backdrop-blur-md text-white transition-colors hover:bg-primary/90 md:hidden"
         >
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          Menu
+          {menuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
         </Button>
       </div>
 
-      {menuOpen && (
-        <div className="mx-4 mt-3 rounded-2xl border border-white/10 bg-foreground p-3 shadow-lg backdrop-blur-md md:hidden">
-          <div className="mb-3 flex gap-2">
-            <Link
-              href="/"
-              onClick={handleLinkClick}
-              className={buttonVariants({
-                size: "lg",
-                className:
-                  "bg-primary-foreground! h-12! flex-1! justify-center! px-5! text-primary! rounded-lg! border-2! border-primary! text-base!",
-              })}
-            >
-              Give
-            </Link>
-            <Link
-              href="/"
-              onClick={() => setMenuOpen(false)}
-              className={buttonVariants({
-                size: "lg",
-                className:
-                  "bg-[#FF0000]! h-12! flex-1! justify-center! px-5! text-white! rounded-lg! border-2! border-background! text-base!",
-              })}
-            >
-              Watch Live
-            </Link>
-          </div>
-
+      {menuVisible && (
+        <div
+          ref={mobileMenuRef}
+          className="mx-4 mt-3 rounded-2xl border border-white/10 bg-foreground p-3 shadow-lg backdrop-blur-md md:hidden"
+        >
           <nav className="flex flex-col gap-2 text-background">
             {navLinks.map((item) => {
               const isActive = pathname === item.href;

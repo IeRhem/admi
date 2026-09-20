@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "@/components/ui/toast";
 
 const ralewayHeading = Raleway({
   subsets: ["latin"],
@@ -51,7 +52,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           disableTransitionOnChange
         >
           <Navbar />
-          <main className="px-4 md:px-16">{children}</main>
+          <main>{children}</main>
+          <Toaster />
           <Footer />
         </ThemeProvider>
       </body>
