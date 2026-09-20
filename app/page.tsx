@@ -86,6 +86,7 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
       <section
         id="vision"
         className="w-full px-4 md:px-10 p-4 flex flex-col md:flex-row items-center justify-between md:gap-4 overflow-hidden"
@@ -136,6 +137,7 @@ export default function Home() {
           />
         </div>
       </section>
+
       <section className="w-full">
         <div className="max-w-full w-4xl p-4 md:p-10 flex flex-col items-center justify-center gap-4 mx-auto">
           <p className="text-2xl md:text-4xl text-center text-foreground/40 font-semibold font-heading list-none">
@@ -148,15 +150,6 @@ export default function Home() {
           </p>
           <span className="text-muted-foreground text-lg">Acts 13:47 NIV</span>
         </div>
-      </section>
-      <section id="testimony" className="w-full py-10 overflow-hidden">
-        <div className="max-w-full px-4 md:px-10 mb-4 md:mb-8">
-          <span className="text-primary text-lg">Showmelujah Report</span>
-          <h1 className="text-4xl md:text-6xl font-heading font-bold">
-            What God has Done
-          </h1>
-        </div>
-        <TestimonySlideshow />
       </section>
 
       <section id="events" className="w-full p-4 md:p-10 overflow-hidden">
@@ -178,6 +171,16 @@ export default function Home() {
             <p className="text-muted-foreground">Every Wednesday 5 PM</p>
           </div>
         </div>
+      </section>
+
+      <section id="testimony" className="w-full py-10 overflow-hidden">
+        <div className="max-w-full px-4 md:px-10 mb-4 md:mb-8">
+          <span className="text-primary text-lg">Showmelujah Report</span>
+          <h1 className="text-4xl md:text-6xl font-heading font-bold">
+            What God has Done
+          </h1>
+        </div>
+        <TestimonySlideshow />
       </section>
 
       <section
