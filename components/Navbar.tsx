@@ -3,11 +3,11 @@
 import { logo, navLinks } from "@/lib/info";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useRef, useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, MoveUpRight, X } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
@@ -204,7 +204,7 @@ export default function Navbar() {
                   "rounded-md px-4 py-2 transition-colors duration-200",
                   isActive
                     ? "bg-white text-black"
-                    : "text-white hover:bg-foreground hover:text-black",
+                    : "text-white hover:bg-foreground hover:text-background",
                 )}
               >
                 {item.name}
@@ -212,6 +212,19 @@ export default function Navbar() {
             );
           })}
         </nav>
+        <Link
+          href="/plan-visit"
+          className={cn(
+            "group hidden! h-fit! items-center justify-center gap-2 pr-1! py-1! transition-transform duration-300 hover:-translate-y-0.5 md:flex!",
+            buttonVariants({ size: "lg", variant: "secondary" }),
+            "bg-foreground! text-background! hover:bg-accent-foreground!",
+          )}
+        >
+          Plan a Visit
+          <span className="flex size-9 items-center justify-center rounded-md bg-primary text-foreground transition-transform duration-300 group-hover:rotate-12 group-hover:scale-105">
+            <MoveUpRight className="size-5 transition-transform duration-300 group-hover:-rotate-12" />
+          </span>
+        </Link>
 
         <Button
           ref={menuBtnRef}
@@ -219,7 +232,7 @@ export default function Navbar() {
           aria-label="Toggle navigation menu"
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((prev) => !prev)}
-          className="inline-flex p-4 items-center text-md justify-center rounded-4xl border border-white/20 bg-primary/75 backdrop-blur-md text-white transition-colors hover:bg-primary/90 md:hidden"
+          className="inline-flex p-4 items-center text-lg justify-center rounded-4xl border border-white/20 bg-primary/75 backdrop-blur-md text-white transition-colors hover:bg-primary/90 md:hidden"
         >
           Menu
           {menuOpen ? <X className="size-6" /> : <Menu className="size-6" />}

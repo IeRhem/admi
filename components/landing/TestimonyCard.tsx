@@ -116,6 +116,7 @@ export function TestimonySlideshow() {
   const trackRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const touchStartX = useRef<number | null>(null);
 
   // Sort by newest and limit to 10
   const latestTestimonies = [...testimonies]
@@ -150,59 +151,43 @@ export function TestimonySlideshow() {
     return () => mediaQuery.removeEventListener("change", updatePreference);
   }, []);
 
-  const maxIndex = useCallback(() => {
-    return Math.max(0, total - visibleCount);
-  }, [total, visibleCount]);
+  const maxIndex = Math.max(0, total - visibleCount);
 
-  const slideTo = useCallback(
+  // Pure animation — no state changes
+  const animateTo = useCallback(
     (index: number) => {
       const track = trackRef.current;
       if (!track) return;
-
-      const clamped = Math.max(0, Math.min(index, maxIndex()));
       const slides = track.querySelectorAll<HTMLElement>(".testimony-slide");
-      if (!slides[clamped]) return;
-
-      const offset = slides[clamped].offsetLeft;
-
+      if (!slides[index]) return;
       gsap.to(track, {
-        x: -offset,
-        duration: 0.5,
+        x: -slides[index].offsetLeft,
+        duration: prefersReducedMotion ? 0 : 0.5,
         ease: "power2.out",
       });
-
-      setCurrent(clamped);
     },
-    [maxIndex],
+    [prefersReducedMotion],
   );
 
-  const next = useCallback(() => {
-    setCurrent((prev) => {
-      const newIndex = prev >= maxIndex() ? 0 : prev + 1;
-      slideTo(newIndex);
-      return newIndex;
-    });
-  }, [maxIndex, slideTo]);
-
-  const prev = useCallback(() => {
-    setCurrent((prev) => {
-      const newIndex = prev <= 0 ? maxIndex() : prev - 1;
-      slideTo(newIndex);
-      return newIndex;
-    });
-  }, [maxIndex, slideTo]);
-
+  // Animate whenever current changes
   useEffect(() => {
-    const clamped = Math.min(current, maxIndex());
-    slideTo(clamped);
-  }, [visibleCount, maxIndex, slideTo, current]);
+    animateTo(current);
+  }, [current, animateTo]);
+
+  // Clamp current when visibleCount changes
+  useEffect(() => {
+    setCurrent((prev) => Math.min(prev, maxIndex));
+  }, [maxIndex]);
+
+  const goNext = useCallback(() => {
+    setCurrent((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  }, [maxIndex]);
+
+  const goPrev = useCallback(() => {
+    setCurrent((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  }, [maxIndex]);
 
   // Autoplay
-  const startAutoplay = useCallback(() => {
-    if (autoplayRef.current) clearInterval(autoplayRef.current);
-    autoplayRef.current = setInterval(next, 5000);
-  }, [next]);
-
   const stopAutoplay = useCallback(() => {
     if (autoplayRef.current) {
       clearInterval(autoplayRef.current);
@@ -210,37 +195,61 @@ export function TestimonySlideshow() {
     }
   }, []);
 
+  const startAutoplay = useCallback(() => {
+    stopAutoplay();
+    autoplayRef.current = setInterval(goNext, 5000);
+  }, [goNext, stopAutoplay]);
+
   useEffect(() => {
     if (!autoplayPaused && !prefersReducedMotion) startAutoplay();
     else stopAutoplay();
     return stopAutoplay;
   }, [autoplayPaused, prefersReducedMotion, startAutoplay, stopAutoplay]);
 
+  const resetAutoplay = useCallback(() => {
+    if (!autoplayPaused && !prefersReducedMotion) {
+      stopAutoplay();
+      startAutoplay();
+    }
+  }, [autoplayPaused, prefersReducedMotion, stopAutoplay, startAutoplay]);
+
   const handlePrev = () => {
-    prev();
-    stopAutoplay();
-    if (!autoplayPaused && !prefersReducedMotion) startAutoplay();
+    goPrev();
+    resetAutoplay();
   };
 
   const handleNext = () => {
-    next();
-    stopAutoplay();
-    if (!autoplayPaused && !prefersReducedMotion) startAutoplay();
+    goNext();
+    resetAutoplay();
   };
 
   const toggleAutoplay = () => {
-    if (autoplayPaused) {
-      setAutoplayPaused(false);
-    } else {
-      stopAutoplay();
-      setAutoplayPaused(true);
+    setAutoplayPaused((p) => !p);
+  };
+
+  // Touch / swipe handling
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const delta = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(delta) >= 40) {
+      delta > 0 ? goNext() : goPrev();
+      resetAutoplay();
     }
+    touchStartX.current = null;
   };
 
   return (
     <div className="relative">
-      {/* Overflow wrapper */}
-      <div className="overflow-hidden">
+      {/* Overflow wrapper with swipe support */}
+      <div
+        className="overflow-hidden select-none"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div ref={trackRef} className="flex will-change-transform">
           {latestTestimonies.map((testimony) => (
             <TestimonySlide key={testimony.id} testimony={testimony} />
@@ -270,13 +279,12 @@ export function TestimonySlideshow() {
 
         {/* Dot Indicators */}
         <div className="flex-1 justify-center gap-1.5 mx-4 hidden md:flex">
-          {Array.from({ length: maxIndex() + 1 }).map((_, i) => (
+          {Array.from({ length: maxIndex + 1 }).map((_, i) => (
             <button
               key={i}
               onClick={() => {
-                slideTo(i);
-                stopAutoplay();
-                if (!autoplayPaused && !prefersReducedMotion) startAutoplay();
+                setCurrent(i);
+                resetAutoplay();
               }}
               className={`h-2 rounded-full transition-all duration-300 ${
                 i === current
@@ -288,8 +296,8 @@ export function TestimonySlideshow() {
           ))}
         </div>
 
-        {/* Arrows */}
-        <div className="flex items-center gap-2">
+        {/* Arrows — hidden on mobile */}
+        <div className="hidden md:flex items-center gap-2">
           <Button
             onClick={toggleAutoplay}
             className="size-10 rounded-full border border-border bg-card hover:bg-muted flex items-center justify-center transition-colors cursor-pointer"
@@ -324,3 +332,4 @@ export function TestimonySlideshow() {
     </div>
   );
 }
+

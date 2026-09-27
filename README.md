@@ -16,6 +16,23 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Updating YouTube videos
+
+Create `.env.local` with a YouTube Data API key and the channel ID or handle:
+
+```bash
+YOUTUBE_API_KEY=your-api-key
+YOUTUBE_CHANNEL_ID=@your-channel
+```
+
+Then generate the static snapshot used by the app:
+
+```bash
+npm run update-youtube-videos
+npm run update-youtube-videos -- --all
+npm run update-youtube-videos -- --max=100
+```
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

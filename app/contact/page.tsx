@@ -107,6 +107,7 @@ export default function ContactPage() {
               <div className="w-full aspect-video rounded-xl overflow-hidden border border-border shadow-inner">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d8101216.517006437!2d1.9654510437231902!3d7.501401973473454!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10f8d5348237416d%3A0x88d965d385deb963!2sArrow%20Of%20Deliverance%20Ministry!5e0!3m2!1sen!2sng!4v1781919354648!5m2!1sen!2sng"
+                  title="Jalingo branch map"
                   className="w-full h-full border-0"
                   allowFullScreen
                   loading="lazy"
@@ -121,6 +122,7 @@ export default function ContactPage() {
               <div className="w-full aspect-video rounded-xl overflow-hidden border border-border shadow-inner bg-muted/30 flex items-center justify-center text-muted-foreground">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.956527775412!2d9.991782410355437!3d7.245787814318922!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10584954322ae83d%3A0x6c4b50efc1cdca6f!2sArrow%20Of%20Deliverance%20Ministries%20Inc.%20Takum!5e0!3m2!1sen!2sng!4v1781920127610!5m2!1sen!2sng"
+                  title="Takum branch map"
                   className="w-full h-full border-0"
                   allowFullScreen
                   loading="lazy"
@@ -135,6 +137,7 @@ export default function ContactPage() {
               <div className="w-full aspect-video rounded-xl overflow-hidden border border-border shadow-inner bg-muted/30 flex items-center justify-center text-muted-foreground">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d307.56610056958255!2d9.790994572124639!3d7.868198972199061!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x105771002a73aeaf%3A0xcd8528027a73ff83!2sArrow%20of%20Deliverance%20Ministries%2C%20Wukari!5e1!3m2!1sen!2sng!4v1781921827599!5m2!1sen!2sng"
+                  title="Wukari branch map"
                   className="w-full h-full border-0"
                   allowFullScreen
                   loading="lazy"
@@ -160,7 +163,7 @@ export default function ContactPage() {
         <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/50 to-transparent pointer-events-none z-20" />
 
         <h2 className="text-5xl md:text-7xl font-bold font-heading text-foreground mb-6 tracking-tight relative z-20">
-          We look forward to your arival!!!
+          We look forward to your arrival!!!
         </h2>
       </section>
     </section>

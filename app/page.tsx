@@ -5,12 +5,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { heroGridItems } from "@/lib/info";
 import Link from "next/link";
 import { ContactForm } from "@/components/forms/contact-form";
-import { MailIcon, MapPin, PhoneIcon } from "lucide-react";
+import { MailIcon, MapPin, MoveUpRight, PhoneIcon } from "lucide-react";
 import SideRays from "@/components/ui/SideRays";
 import GridMotion from "@/components/ui/GridMotion";
 import DepthCarousel from "@/components/ui/DepthCarousel";
 import { cn } from "@/lib/utils";
 import { TestimonySlideshow } from "@/components/landing/TestimonyCard";
+import { FeaturedSermon } from "@/components/sermons/FeaturedSermon";
+import { youTubeVideos } from "@/data/youtubevideos";
+import { RegularEvents } from "@/components/landing/RegularEvents";
+import { UpcomingEvents } from "@/components/landing/UpcomingEvent";
 
 const visionCarouselItems = Array.from({ length: 12 }, (_, i) => ({
   image: `/grid-image/image-${i + 1}.jpg`,
@@ -64,27 +68,50 @@ export default function Home() {
 
           <span
             id="welcome-text"
-            className="text-white/80 font-semibold font-heading drop-shadow-sm text-xl md:text-3xl"
+            className="text-foreground/60 font-semibold font-heading drop-shadow-sm text-xl md:text-3xl"
           >
             Welcome to
           </span>
           <h1
             id="church-name"
-            className="text-white text-5xl sm:text-5xl leading-none md:text-8xl font-bold font-heading tracking-tight drop-shadow-lg"
+            className="text-foreground text-5xl sm:text-5xl leading-none md:text-8xl lg:text-9xl font-bold font-heading tracking-tight drop-shadow-lg"
           >
-            Arrow of Deliverance Ministries Int&apos;l
+            Arrow of Deliverance Ministries
           </h1>
           <Link
-            href="/contact"
+            href="/plan-visit"
             className={cn(
-              buttonVariants({ size: "lg" }),
-              "visit-us bg-primary/70 text-base md:text-lg mt-6 px-6 py-3 md:px-8 md:py-6",
+              "group hidden h-fit! items-center justify-center gap-2 pr-1! py-1! transition-transform duration-300 hover:-translate-y-0.5 md:flex",
+              buttonVariants({ size: "lg", variant: "secondary" }),
+              "bg-foreground! text-background! hover:bg-foreground/80! hover:text-background! mt-8",
             )}
           >
-            <MapPin size={30} />
-            Visit Us
+            Plan a Visit
+            <span className="flex size-9 items-center justify-center rounded-md bg-primary text-foreground transition-transform duration-300 group-hover:rotate-12 group-hover:scale-105">
+              <MoveUpRight className="size-5 transition-transform duration-300 group-hover:-rotate-12" />
+            </span>
           </Link>
+          <div id="regular-events" className="mt-20 w-full">
+            <RegularEvents />
+          </div>
         </div>
+      </section>
+
+      <section
+        id="latest-sermon"
+        className="w-full px-4 py-16 md:px-10 md:py-24"
+      >
+        <FeaturedSermon videos={youTubeVideos} />
+      </section>
+
+      <section id="events" className="w-full p-4 md:p-10 overflow-hidden">
+        <div className="mb-4 md:mb-8">
+          <span className="text-primary text-lg">Upcoming</span>
+          <h1 className="text-4xl md:text-6xl font-heading font-bold">
+            Events
+          </h1>
+        </div>
+        <UpcomingEvents />
       </section>
 
       <section
@@ -113,8 +140,8 @@ export default function Home() {
                 "visit-us",
               )}
             >
-              <MapPin size={30} />
               Visit Us
+              <MapPin size={30} />
             </Link>
           </div>
         </div>
@@ -149,27 +176,6 @@ export default function Home() {
             </span>
           </p>
           <span className="text-muted-foreground text-lg">Acts 13:47 NIV</span>
-        </div>
-      </section>
-
-      <section id="events" className="w-full p-4 md:p-10 overflow-hidden">
-        <div id="upcoming-events"></div>
-        <div
-          id="regular-events"
-          className="grid w-full grid-cols-1 gap-6 md:grid-cols-3"
-        >
-          <div className="text-center">
-            <h1 className="text-xl font-bold">Sunday Service</h1>
-            <p className="text-muted-foreground">Every Sunday at 8 AM</p>
-          </div>
-          <div className="text-center">
-            <h1 className="text-xl font-bold">Healing School</h1>
-            <p className="text-muted-foreground">Every Tuesday at 10 AM</p>
-          </div>
-          <div className="text-center">
-            <h1 className="text-xl font-bold">Communion Service</h1>
-            <p className="text-muted-foreground">Every Wednesday 5 PM</p>
-          </div>
         </div>
       </section>
 

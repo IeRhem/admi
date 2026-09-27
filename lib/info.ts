@@ -26,8 +26,9 @@ export const leadership = [
 export const navLinks = [
   { name: "Home", href: "/" },
   { name: "The Church", href: "/about" },
-  { name: "Contact", href: "/contact" },
+  { name: "Sermons", href: "/sermons" },
   { name: "Events", href: "/events" },
+  { name: "Contact", href: "/contact" },
   { name: "Give", href: "/give" },
 ];
 
